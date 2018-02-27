@@ -7,25 +7,14 @@ export class Block {
     this.x = x;
     this.y = y;
     this.selected=false;
-    if (colour === undefined)
-    {
-      this.colour= COLOURS[Math.floor(Math.random() * COLOURS.length)]
-    }
-    else
-    {
-      this.colour = colour;
-    }
-    if (blockGrid!== undefined)
-    {
-      this.DetermineNeighBors(blockGrid);
-    }
-    
+    this.ChangeColor(colour,blockGrid);
   }
   
 Select()
 {
   let listOfBottonElementsToPush= [];
   this.SelectAux(listOfBottonElementsToPush);
+
   return listOfBottonElementsToPush;
 }
 
@@ -41,6 +30,7 @@ Select()
       block.SelectAux(listOfBottonElementsToPush);
     });
   }
+
 
  Dissapear()
  {
@@ -104,11 +94,21 @@ Select()
     return false;
   }
 
-  ChangeColor(newColor, blockGrid)
+  ChangeColor(colour, blockGrid)
   {
-    this.colour= newColor;
     this.selected= false;
-    this.DetermineNeighBors(blockGrid);
+    if (colour === undefined)
+    {
+      this.colour= COLOURS[Math.floor(Math.random() * COLOURS.length)]
+    }
+    else
+    {
+      this.colour = colour;
+    }
+    if (blockGrid!== undefined)
+    {
+      this.DetermineNeighBors(blockGrid);
+    }
   }
 
   NeighborsSameColor()
@@ -233,22 +233,23 @@ export class BlockGrid {
     
   }
 
-  PullDown(listOfBottonElementsToPush)
+  PullDown(blocksToPull)
   {
-    for (let i = 0; i < listOfBottonElementsToPush.length; i++) 
+    for (let i = 0; i < blocksToPull.length; i++) 
     {
-      let height= 1, current = listOfBottonElementsToPush[i];
+      let height= 1, current = blocksToPull[i];
       while (current.HasNeighborOnTop())
       {
         height++;
         current= current.BlockAtTop;
       }
-      for (let blockY = listOfBottonElementsToPush[i].y; blockY <this.grid[0].length; blockY++) 
+      let blockToPull= blocksToPull[i];
+      for (let blockY = blockToPull.y; blockY <this.grid[0].length; blockY++) 
       {
-          let blockToReplace= this.GetBlockAt(listOfBottonElementsToPush[i].x,blockY)
+          let blockToReplace= this.GetBlockAt(blockToPull.x,blockY)
           if (blockToReplace !== null)
           {
-            let blockToReplaceWith = this.GetBlockAt(listOfBottonElementsToPush[i].x,blockY + height);
+            let blockToReplaceWith = this.GetBlockAt(blockToPull.x,blockY + height);
             this.Replace(blockToReplace, blockToReplaceWith)
           }
       }
@@ -275,7 +276,7 @@ export class BlockGrid {
 
   blockClicked(e, block) {
     let listOfBottonElementsToPush=  this.grid[block.x][block.y].Select();
-    this.PullDown(listOfBottonElementsToPush);
+    this.PullDown(listOfBottonElementsToPush.sort());
     this.rerender();
   }
 }

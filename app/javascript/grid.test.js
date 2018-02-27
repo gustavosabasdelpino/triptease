@@ -28,8 +28,8 @@ describe('BlockGrid', () => {
 describe('BlockGrid', () => {
   it('can play', () => {
     let rows =[
-      [0,[1,'green'], [0,'red']],
-      [1,[1,'red'], [0,'red']]
+      [0,[0,'green'], [1,'red']],
+      [1,[0,'red'], [1,'red']]
     ];
     let blocksGrid= new BlockGrid(rows);
     blocksGrid.blockClicked(undefined,new Block(1,1))
@@ -37,3 +37,20 @@ describe('BlockGrid', () => {
     assert.equal (blocksGrid.GetBlockAt(110),null);  
   });
 });
+
+describe('BlockGrid', () => {
+  it('can play with more than one block selected in the same column', () => {
+    let rows =[
+      [0,[0,'green'], [1,'green'],[2,'green'], [3,'green']],
+      [1,[0,'red'], [1,'red'],[2,'red'], [3,'green']],
+      [2,[0,'red'], [1,'green'],[2,'red'], [3,'green']],
+      [3,[0,'green'], [1,'green'],[2,'green'], [3,'green']],
+    ];
+    let blocksGrid= new BlockGrid(rows);
+    blocksGrid.blockClicked(undefined,new Block(1,1))
+    assert.equal (blocksGrid.GetBlockAt(1,0).colour,'green');
+    assert.equal (blocksGrid.GetBlockAt(2,0).colour,'green');
+    assert.equal (blocksGrid.GetBlockAt(1,1),null);  
+  });
+});
+
