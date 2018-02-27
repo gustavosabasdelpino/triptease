@@ -1,4 +1,4 @@
-import { Block, COLOURS } from './grid';
+import { Block, COLOURS, BlockGrid } from './grid';
 import { assert } from 'chai';
 
 describe('Block', () => {
@@ -14,6 +14,14 @@ describe('Block', () => {
   });
 });
 
+
 describe('BlockGrid', () => {
-  xit('should be implemented!', () => {});
+  it('can be created on demand', () => {
+    let rows =[
+      [0,[1,'red'], [0,'red']]
+    ];
+    let blocksGrid= new BlockGrid(rows);
+    assert.equal (blocksGrid.GetBlockAt(0,0).colour,'red');  
+  });
 });
+
