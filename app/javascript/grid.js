@@ -250,27 +250,45 @@ export class BlockGrid {
           if (blockToReplace !== null)
           {
             let blockToReplaceWith = this.GetBlockAt(blockToPull.x,blockY + height);
-            this.Replace(blockToReplace, blockToReplaceWith)
+            this.Replace(blockToReplace, blockToReplaceWith,blocksToPull)
+            
           }
       }
 
     } 
   }
 
-  Replace(block1, block2)
+  Replace(block1, block2, blocksToPull)
   {
-    let oldBlock= this.grid[block1.x][block1.y]
     if (block2 === null)
     {
-      if (oldBlock !==null)
-      {
-        oldBlock.Dissapear();
-      }
-      this.grid[block1.x][block1.y] = block2;  
+      this.MakeBlockDissapear(block1);   
     }
     else
     {
       this.grid[block1.x][block1.y].ChangeColor(block2.colour,this);
+      this.UpdateListToPullIfNeeded(block1, block2,blocksToPull);
+    }
+  }
+
+  MakeBlockDissapear(block)
+  {
+    let oldBlock= this.grid[block.x][block.y]
+    if (oldBlock !==null)
+    {
+      oldBlock.Dissapear();
+    }
+    this.grid[block.x][block.y] = null;  
+  }
+
+  UpdateListToPullIfNeeded(block1, block2, blocksToPull)
+  {
+    for (let i = 0; i < blocksToPull.length; i++) 
+    {
+      if (blocksToPull[i].x===block2.x && blocksToPull[i].y===block2.y )
+      {
+        blocksToPull[i] = this.grid[block1.x][block1.y];
+      }
     }
   }
 
@@ -282,3 +300,4 @@ export class BlockGrid {
 }
 
 window.addEventListener('DOMContentLoaded', () => new BlockGrid().render());
+

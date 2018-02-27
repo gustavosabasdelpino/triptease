@@ -51,6 +51,7 @@ describe('BlockGrid', () => {
     assert.equal (blocksGrid.GetBlockAt(1,0).colour,'green');
     assert.equal (blocksGrid.GetBlockAt(2,0).colour,'green');
     assert.equal (blocksGrid.GetBlockAt(1,1),null);  
+    assert.equal (blocksGrid.GetBlockAt(2,1).colour,'green');
   });
 });
 
