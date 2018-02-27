@@ -25,3 +25,15 @@ describe('BlockGrid', () => {
   });
 });
 
+describe('BlockGrid', () => {
+  it('can play', () => {
+    let rows =[
+      [0,[1,'green'], [0,'red']],
+      [1,[1,'red'], [0,'red']]
+    ];
+    let blocksGrid= new BlockGrid(rows);
+    blocksGrid.blockClicked(undefined,new Block(1,1))
+    assert.equal (blocksGrid.GetBlockAt(0,0).colour,'green');  
+    assert.equal (blocksGrid.GetBlockAt(110),null);  
+  });
+});

@@ -222,11 +222,15 @@ export class BlockGrid {
 
 
   rerender(el = document.querySelector('#gridEl')) {
-    while (el.children.length>0)
+    if (el !== undefined && el!== null)
     {
-      el.removeChild(el.children[0]);
+      while (el.children.length>0)
+      {
+        el.removeChild(el.children[0]);
+      }
+      this.render(el);
     }
-    this.render(el);
+    
   }
 
   PullDown(listOfBottonElementsToPush)
@@ -270,7 +274,7 @@ export class BlockGrid {
   }
 
   blockClicked(e, block) {
-    let listOfBottonElementsToPush=  block.Select();
+    let listOfBottonElementsToPush=  this.grid[block.x][block.y].Select();
     this.PullDown(listOfBottonElementsToPush);
     this.rerender();
   }
