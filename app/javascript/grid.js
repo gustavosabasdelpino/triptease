@@ -21,6 +21,46 @@ export class Block {
     }
     
   }
+  
+Select()
+{
+  let listOfBottonElementsToPush= [];
+  this.SelectAux(listOfBottonElementsToPush);
+  return listOfBottonElementsToPush;
+}
+
+  SelectAux(listOfBottonElementsToPush)
+  {
+    this.selected= true;
+    let neighborsToSelect=this.NeighborsSameColor();
+    if (this.IsBottonOfNeighborhood())
+    {
+      listOfBottonElementsToPush.push(this);
+    }
+    neighborsToSelect.forEach(block => {
+      block.SelectAux(listOfBottonElementsToPush);
+    });
+  }
+
+ Dissapear()
+ {
+  if (this.BlockAtLeft !== null)
+  {
+    this.BlockAtLeft.BlockAtRight= null;
+  }
+  if (this.BlockAtRight !== null)
+  {
+    this.BlockAtRight.BlockAtLeft= null;
+  }
+  if (this.BlockAtTop !== null)
+  {
+    this.BlockAtTop.BlockAtBottom= null;
+  }
+  if (this.BlockAtBottom !== null)
+  {
+    this.BlockAtBottom.BlockAtTop= null;
+  }
+ }
 
   DetermineNeighBors(blockGrid)
   {
@@ -46,6 +86,48 @@ export class Block {
     }
   }
 
+  HasNeighborOnTop()
+  {
+    if (this.BlockAtTop== null || this.colour!== this.BlockAtTop.colour)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  IsBottonOfNeighborhood()
+  {
+    if (this.BlockAtBottom === null || this.colour!== this.BlockAtBottom.colour)
+    {
+      return true;
+    }
+    return false;
+  }
+
+  ChangeColor(newColor, blockGrid)
+  {
+    this.colour= newColor;
+    this.selected= false;
+    this.DetermineNeighBors(blockGrid);
+  }
+
+  NeighborsSameColor()
+  {
+    let listOfNeighborsSameColor=[];
+    this.AddNeighborToListIfNotNullAndSameColor(this.BlockAtLeft,listOfNeighborsSameColor);
+    this.AddNeighborToListIfNotNullAndSameColor(this.BlockAtRight,listOfNeighborsSameColor);
+    this.AddNeighborToListIfNotNullAndSameColor(this.BlockAtTop,listOfNeighborsSameColor);
+    this.AddNeighborToListIfNotNullAndSameColor(this.BlockAtBottom,listOfNeighborsSameColor);
+    return listOfNeighborsSameColor;
+  }
+
+  AddNeighborToListIfNotNullAndSameColor(block,list)
+  {
+    if (block !== null && block.colour=== this.colour && block.selected===false )
+    {
+       list.push(block);
+    }
+  }
 }
 
 export class BlockGrid {
@@ -139,8 +221,58 @@ export class BlockGrid {
   }
 
 
-  blockClicked(e, block) {
+  rerender(el = document.querySelector('#gridEl')) {
+    while (el.children.length>0)
+    {
+      el.removeChild(el.children[0]);
+    }
+    this.render(el);
+  }
 
+  PullDown(listOfBottonElementsToPush)
+  {
+    for (let i = 0; i < listOfBottonElementsToPush.length; i++) 
+    {
+      let height= 1, current = listOfBottonElementsToPush[i];
+      while (current.HasNeighborOnTop())
+      {
+        height++;
+        current= current.BlockAtTop;
+      }
+      for (let blockY = listOfBottonElementsToPush[i].y; blockY <this.grid[0].length; blockY++) 
+      {
+          let blockToReplace= this.GetBlockAt(listOfBottonElementsToPush[i].x,blockY)
+          if (blockToReplace !== null)
+          {
+            let blockToReplaceWith = this.GetBlockAt(listOfBottonElementsToPush[i].x,blockY + height);
+            this.Replace(blockToReplace, blockToReplaceWith)
+          }
+      }
+
+    } 
+  }
+
+  Replace(block1, block2)
+  {
+    let oldBlock= this.grid[block1.x][block1.y]
+    if (block2 === null)
+    {
+      if (oldBlock !==null)
+      {
+        oldBlock.Dissapear();
+      }
+      this.grid[block1.x][block1.y] = block2;  
+    }
+    else
+    {
+      this.grid[block1.x][block1.y].ChangeColor(block2.colour,this);
+    }
+  }
+
+  blockClicked(e, block) {
+    let listOfBottonElementsToPush=  block.Select();
+    this.PullDown(listOfBottonElementsToPush);
+    this.rerender();
   }
 }
 
